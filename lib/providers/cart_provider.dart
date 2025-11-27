@@ -40,18 +40,32 @@ class CartProvider_Joan extends ChangeNotifier {
       subtotal += item.price_stefano.toDouble();
     }
 
-    if (userNim.isEmpty) return;
+    // Trim whitespace
+    userNim = userNim.trim();
+    print("DEBUG: Calculating transaction for NIM: '$userNim'");
 
     int? lastDigit;
     try {
-      lastDigit = int.parse(userNim.substring(userNim.length - 1));
+      // Cari digit terakhir dalam string (mengabaikan karakter non-angka di akhir)
+      final RegExp digitRegex = RegExp(r'\d');
+      final matches = digitRegex.allMatches(userNim);
+
+      if (matches.isNotEmpty) {
+        String lastChar = matches.last.group(0)!;
+        print("DEBUG: Last numeric digit found: '$lastChar'");
+        lastDigit = int.parse(lastChar);
+      } else {
+        print("DEBUG: No numeric digits found in NIM. Defaulting to 0 (Even).");
+        lastDigit = 0;
+      }
     } catch (e) {
-      // Jika NIM bukan angka (misal nama), anggap sebagai NIM Genap (Standard)
+      print("DEBUG: Error parsing last digit: $e. Defaulting to 0 (Even).");
       lastDigit = 0;
     }
 
     if (lastDigit != null && lastDigit % 2 != 0) {
       // NIM Ganjil: Diskon 5% + Ongkir Rp 10.000
+      print("DEBUG: NIM Ganjil ($userNim). Applying 5% discount.");
       double discount = subtotal * 0.05;
       _shippingCost_Joan = 10000;
       _finalPrice_Joan = (subtotal - discount) + _shippingCost_Joan;
@@ -59,6 +73,7 @@ class CartProvider_Joan extends ChangeNotifier {
           "NIM Ganjil: Diskon 5% (-Rp ${discount.toStringAsFixed(0)}) + Ongkir Rp 10.000";
     } else {
       // NIM Genap: Gratis Ongkir + Harga Normal
+      print("DEBUG: NIM Genap ($userNim). Applying Free Shipping.");
       _shippingCost_Joan = 0;
       _finalPrice_Joan = subtotal;
       _promoDescription_Joan = "NIM Genap: Gratis Ongkir!";

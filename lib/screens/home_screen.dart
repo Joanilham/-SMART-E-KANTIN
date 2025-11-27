@@ -33,7 +33,9 @@ class _HomeScreen_BagasState extends State<HomeScreen_Bagas> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const CartScreen_Joan(),
+                  builder: (context) => CartScreen_Joan(
+                    currentUserNim_Joan: widget.currentUserNim_Bagas,
+                  ),
                 ),
               );
             },
