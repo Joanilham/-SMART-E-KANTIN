@@ -5,80 +5,175 @@ import '../models/product_model.dart';
 import '../providers/cart_provider.dart';
 import 'cart_screen.dart';
 
-class HomeScreen_DEV extends StatelessWidget {
-  // Asumsi User NIM didapat setelah login
-  final String currentUserNim_DEV; 
+class HomeScreen_Bagas extends StatefulWidget {
+  final String currentUserNim_Bagas;
 
-  const HomeScreen_DEV({super.key, required this.currentUserNim_DEV});
+  const HomeScreen_Bagas({super.key, required this.currentUserNim_Bagas});
 
+  @override
+  State<HomeScreen_Bagas> createState() => _HomeScreen_BagasState();
+}
+
+class _HomeScreen_BagasState extends State<HomeScreen_Bagas> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Menu Kantin"),
+        backgroundColor: Colors.white,
+        shadowColor: const Color.fromARGB(255, 98, 98, 98),
+        iconTheme: const IconThemeData(color: Colors.black),
+        title: const Text('Menu', style: TextStyle(color: Colors.black)),
         actions: [
-          // Icon Keranjang dengan Badge Jumlah Item
-          Consumer<CartProvider_DEV>(
-            builder: (context, cart, child) {
-              return IconButton(
-                icon: Badge(
-                  label: Text(cart.items.length.toString()),
-                  child: const Icon(Icons.shopping_cart),
+          IconButton(
+            icon: const Icon(
+              Icons.shopping_cart,
+              color: Color.fromARGB(255, 75, 213, 255),
+            ),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const CartScreen_Joan(),
                 ),
-                onPressed: () {
-                  // Hitung total sebelum masuk halaman cart
-                  cart.calculateTransaction_DEV(currentUserNim_DEV);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const CartScreen_DEV()),
-                  );
-                },
               );
             },
-          )
+          ),
         ],
       ),
-      // StreamBuilder untuk Realtime Update dari Firebase [cite: 12]
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance.collection('products').snapshots(),
         builder: (context, snapshot) {
-          // 1. Handling Loading
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator()); // Widget Loading [cite: 45]
+            return const Center(child: CircularProgressIndicator());
           }
 
-          // 2. Handling Error / Kosong 
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return const Center(child: Text("Menu sedang kosong, silakan kembali nanti."));
+            return const Center(child: Text('No products found.'));
           }
 
-          // 3. Render Data
-          return ListView.builder(
-            itemCount: snapshot.data!.docs.length,
-            itemBuilder: (context, index) {
-              var data = snapshot.data!.docs[index].data() as Map<String, dynamic>;
-              
-              // Konversi JSON ke Model (Tugas Anggota 1)
-              ProductModel_DEV product = ProductModel_DEV.fromJson(data);
+          final allDocs = snapshot.data!.docs;
+          final products = allDocs.map((d) {
+            final data = d.data() as Map<String, dynamic>;
+            return ProductModel_stefano.fromJson(data);
+          }).toList();
 
-              return Card(
-                margin: const EdgeInsets.all(8),
-                child: ListTile(
-                  leading: Image.network(product.imageUrl_DEV, width: 50, height: 50, fit: BoxFit.cover),
-                  title: Text(product.name_DEV),
-                  subtitle: Text("Rp ${product.price_DEV}"),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.add_circle, color: Colors.green),
-                    onPressed: () {
-                      // Panggil Logic Add to Cart (Anggota 4) [cite: 39]
-                      Provider.of<CartProvider_DEV>(context, listen: false).addToCart_DEV(product);
-                      
-                      // Feedback ke User (UX Matang)
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text("${product.name_DEV} masuk keranjang!")),
-                      );
-                    },
-                  ),
+          return GridView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+              childAspectRatio: 0.72,
+            ),
+            itemCount: products.length,
+            itemBuilder: (context, index) {
+              final product = products[index];
+              return Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.04),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Expanded(
+                      child: ClipRRect(
+                        borderRadius: const BorderRadius.vertical(
+                          top: Radius.circular(12),
+                        ),
+                        child: Image.network(
+                          product.imageUrl_stefano,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) =>
+                              const Icon(Icons.fastfood, size: 40),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            product.name_stefano,
+                            style: const TextStyle(fontWeight: FontWeight.w600),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            "Rp ${product.price_stefano}",
+                            style: const TextStyle(color: Colors.grey),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Stok: ${product.stock_stefano}',
+                            style: const TextStyle(
+                              color: Colors.grey,
+                              fontSize: 12,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              ElevatedButton(
+                                onPressed: product.stock_stefano > 0
+                                    ? () {
+                                        Provider.of<CartProvider_Joan>(
+                                          context,
+                                          listen: false,
+                                        ).addToCart_Joan(product);
+
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                              "${product.name_stefano} masuk keranjang!",
+                                            ),
+                                            behavior: SnackBarBehavior.floating,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                            ),
+                                            margin: const EdgeInsets.only(
+                                              bottom: 150,
+                                              left: 16,
+                                              right: 16,
+                                            ),
+                                            backgroundColor: Colors.green,
+                                          ),
+                                        );
+                                      }
+                                    : null,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: product.stock_stefano > 0
+                                      ? const Color.fromARGB(255, 75, 213, 255)
+                                      : Colors.grey,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 8,
+                                  ),
+                                ),
+                                child: const Text('Tambah'),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               );
             },
