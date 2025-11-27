@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import 'home_screen.dart';
@@ -30,6 +29,8 @@ class _LoginScreen_BagasState extends State<LoginScreen_Bagas> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              Image.asset('assets/logo.png', height: 150),
+              const SizedBox(height: 30),
               // Email - bubble style
               Container(
                 decoration: BoxDecoration(
@@ -119,7 +120,16 @@ class _LoginScreen_BagasState extends State<LoginScreen_Bagas> {
                                   );
 
                               // Jika NIM tidak ketemu (data lama/error), fallback ke parsing email (atau handle error)
-                              nim ??= _emailController_Bagas.text.split('@')[0];
+                              if (nim == null) {
+                                print(
+                                  "DEBUG: NIM not found in Firestore. Using email fallback.",
+                                );
+                                nim = _emailController_Bagas.text.split('@')[0];
+                              }
+
+                              print(
+                                "DEBUG: Final NIM passed to HomeScreen: '$nim'",
+                              );
 
                               if (mounted) {
                                 Navigator.pushReplacement(

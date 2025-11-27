@@ -3,8 +3,26 @@ import 'package:provider/provider.dart';
 import '../providers/cart_provider.dart';
 import '../models/product_model.dart';
 
-class CartScreen_Joan extends StatelessWidget {
-  const CartScreen_Joan({super.key});
+class CartScreen_Joan extends StatefulWidget {
+  final String currentUserNim_Joan;
+  const CartScreen_Joan({super.key, required this.currentUserNim_Joan});
+
+  @override
+  State<CartScreen_Joan> createState() => _CartScreen_JoanState();
+}
+
+class _CartScreen_JoanState extends State<CartScreen_Joan> {
+  @override
+  void initState() {
+    super.initState();
+    // Hitung transaksi saat masuk layar keranjang
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<CartProvider_Joan>(
+        context,
+        listen: false,
+      ).calculateTransaction_Joan(widget.currentUserNim_Joan);
+    });
+  }
 
   int _countQuantity(List<ProductModel_stefano> items, ProductModel_stefano p) {
     return items
@@ -114,14 +132,22 @@ class CartScreen_Joan extends StatelessWidget {
                                   const SizedBox(height: 6),
                                   Text(
                                     'Rp ${product.price_stefano}',
-                                    style: const TextStyle(color: Color.fromARGB(255, 43, 205, 255), fontWeight: FontWeight.bold),
+                                    style: const TextStyle(
+                                      color: Color.fromARGB(255, 43, 205, 255),
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                   const SizedBox(height: 8),
                                   Row(
                                     children: [
                                       Container(
                                         decoration: BoxDecoration(
-                                          color: const Color.fromARGB(255, 174, 236, 255),
+                                          color: const Color.fromARGB(
+                                            255,
+                                            174,
+                                            236,
+                                            255,
+                                          ),
                                           borderRadius: BorderRadius.circular(
                                             8,
                                           ),
@@ -133,7 +159,12 @@ class CartScreen_Joan extends StatelessWidget {
                                                   .removeFromCart_Joan(product),
                                               icon: Icon(
                                                 Icons.remove,
-                                                color: const Color.fromARGB(255, 0, 0, 0),
+                                                color: const Color.fromARGB(
+                                                  255,
+                                                  0,
+                                                  0,
+                                                  0,
+                                                ),
                                               ),
                                               splashRadius: 20,
                                               visualDensity:
@@ -142,7 +173,12 @@ class CartScreen_Joan extends StatelessWidget {
                                             Text(
                                               qty.toString(),
                                               style: const TextStyle(
-                                                color: Color.fromARGB(255, 0, 0, 0),
+                                                color: Color.fromARGB(
+                                                  255,
+                                                  0,
+                                                  0,
+                                                  0,
+                                                ),
                                                 fontWeight: FontWeight.bold,
                                               ),
                                             ),
@@ -151,7 +187,12 @@ class CartScreen_Joan extends StatelessWidget {
                                                   cart.addToCart_Joan(product),
                                               icon: Icon(
                                                 Icons.add,
-                                                color: const Color.fromARGB(255, 0, 0, 0),
+                                                color: const Color.fromARGB(
+                                                  255,
+                                                  0,
+                                                  0,
+                                                  0,
+                                                ),
                                               ),
                                               splashRadius: 20,
                                               visualDensity:
