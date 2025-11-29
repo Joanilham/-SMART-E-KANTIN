@@ -17,11 +17,11 @@ class AuthService_Rizwar {
 
     // Perbaikan: Menggunakan RegExp untuk validasi format email + domain wajib
     // Ganti @kampus\.ac\.id$ dengan domain kampus Anda
-    const String campusDomain_R = r'@gmail\.com$';
-    final RegExp emailRegex_R = RegExp(r'^[a-zA-Z0-9.]+' + campusDomain_R);
+    const String Domain_R = r'@gmail\.com$';
+    final RegExp emailRegex_R = RegExp(r'^[a-zA-Z0-9.]+' + Domain_R);
 
     if (!emailRegex_R.hasMatch(value)) {
-      return 'Wajib gunakan format email yang valid dan domain kampus (ex: @gmail.com)!';
+      return 'Wajib gunakan format email yang valid (ex: @gmail.com)!';
     }
     return null;
   }
@@ -94,5 +94,10 @@ class AuthService_Rizwar {
       print("Error getting NIM: $e");
       return null;
     }
+  }
+
+  // 6. Sign Out (Watermark Code R)
+  Future<void> signOut_Rizwar() async {
+    await _auth_Riz.signOut();
   }
 }
