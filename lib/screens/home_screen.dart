@@ -3,7 +3,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import '../models/product_model.dart';
 import '../providers/cart_provider.dart';
+import '../services/auth_service.dart';
 import 'cart_screen.dart';
+import 'profile_screen.dart';
+import 'login_screen.dart';
 
 class HomeScreen_Bagas extends StatefulWidget {
   final String currentUserNim_Bagas;
@@ -40,8 +43,41 @@ class _HomeScreen_BagasState extends State<HomeScreen_Bagas> {
               );
             },
           ),
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.account_circle, color: Colors.black),
+            onSelected: (value) async {
+              if (value == 'profile') {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ProfileScreen_Bagas(
+                      currentUserNim_Bagas: widget.currentUserNim_Bagas,
+                    ),
+                  ),
+                );
+              } else if (value == 'logout') {
+                await AuthService_Rizwar().signOut_Rizwar();
+                if (mounted) {
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const LoginScreen_Bagas(),
+                    ),
+                    (route) => false,
+                  );
+                }
+              }
+            },
+            itemBuilder: (BuildContext context) {
+              return [
+                const PopupMenuItem(value: 'profile', child: Text('Profile')),
+                const PopupMenuItem(value: 'logout', child: Text('Logout')),
+              ];
+            },
+          ),
         ],
       ),
+      
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance.collection('products').snapshots(),
         builder: (context, snapshot) {
@@ -112,13 +148,17 @@ class _HomeScreen_BagasState extends State<HomeScreen_Bagas> {
                           const SizedBox(height: 6),
                           Text(
                             "Rp ${product.price_stefano}",
-                            style: const TextStyle(color: Colors.grey),
+                            style: TextStyle(
+                              color: Colors.blue[800],
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                            ),
                           ),
                           const SizedBox(height: 4),
                           Text(
                             'Stok: ${product.stock_stefano}',
                             style: const TextStyle(
-                              color: Colors.grey,
+                              color: Colors.black54,
                               fontSize: 12,
                             ),
                           ),
