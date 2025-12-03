@@ -2,6 +2,8 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:crypto/crypto.dart';
+import 'dart:convert';
 
 // Watermark Code diterapkan pada nama Class
 class AuthService_Rizwar {
@@ -62,11 +64,16 @@ class AuthService_Rizwar {
 
       if (user_R != null) {
         // 2. Simpan Data ke Firestore (Collection: Users)
+        // Hash password sebelum disimpan
+        String hashedPassword = sha256
+            .convert(utf8.encode(password))
+            .toString();
+
         await _firestore_Riz.collection('Users').doc(nim).set({
           'user_id': nim,
           'email': email,
           'full name': fullName,
-          'password': password, // Disimpan sesuai Data Dictionary
+          'password': hashedPassword, // Disimpan dalam bentuk hash
         });
       }
       return user_R;

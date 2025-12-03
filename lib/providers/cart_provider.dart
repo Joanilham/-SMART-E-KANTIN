@@ -42,7 +42,7 @@ class CartProvider_Joan extends ChangeNotifier {
 
     // Trim whitespace
     userNim = userNim.trim();
-    print("DEBUG: Calculating transaction for NIM: '$userNim'");
+    print("DEBUG: Menghitung transaction berdasarkan NIM: '$userNim'");
 
     int? lastDigit;
     try {
@@ -65,7 +65,7 @@ class CartProvider_Joan extends ChangeNotifier {
 
     if (lastDigit % 2 != 0) {
       // NIM Ganjil: Diskon 5% + Ongkir Rp 10.000
-      print("DEBUG: NIM Ganjil ($userNim). Applying 5% discount.");
+      print("DEBUG: NIM Ganjil ($userNim). Terapkan 5% discount.");
       double discount = subtotal * 0.05;
       _shippingCost_Joan = 10000;
       _finalPrice_Joan = (subtotal - discount) + _shippingCost_Joan;
@@ -73,7 +73,7 @@ class CartProvider_Joan extends ChangeNotifier {
           "NIM Ganjil: Diskon 5% (-Rp ${discount.toStringAsFixed(0)}) + Ongkir Rp 10.000";
     } else {
       // NIM Genap: Gratis Ongkir + Harga Normal
-      print("DEBUG: NIM Genap ($userNim). Applying Free Shipping.");
+      print("DEBUG: NIM Genap ($userNim). Terapkan Gratis ongkir.");
       _shippingCost_Joan = 0;
       _finalPrice_Joan = subtotal;
       _promoDescription_Joan = "NIM Genap: Gratis Ongkir!";
@@ -101,10 +101,6 @@ class CartProvider_Joan extends ChangeNotifier {
         DocumentReference productRef = firestore
             .collection('products')
             .doc(productId);
-
-        // Note: Idealnya pakai Transaction untuk safety concurrency,
-        // tapi Batch cukup untuk use case sederhana ini.
-        // Kita gunakan FieldValue.increment(-quantity)
         batch.update(productRef, {
           'stock': FieldValue.increment(-quantityToBuy),
         });
