@@ -17,6 +17,7 @@ class _LoginScreen_BagasState extends State<LoginScreen_Bagas> {
       TextEditingController();
   final AuthService_Rizwar _authService_Riz = AuthService_Rizwar();
   bool _isLoading_Bagas = false;
+  bool _isPasswordVisible = false;
 
   @override
   Widget build(BuildContext context) {
@@ -81,20 +82,33 @@ class _LoginScreen_BagasState extends State<LoginScreen_Bagas> {
                     ),
                     child: TextFormField(
                       controller: _passwordController_Bagas,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         labelText: "Password",
                         filled: true,
                         fillColor: Colors.transparent,
-                        contentPadding: EdgeInsets.symmetric(
+                        contentPadding: const EdgeInsets.symmetric(
                           vertical: 18,
                           horizontal: 20,
                         ),
-                        border: OutlineInputBorder(
+                        border: const OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(30)),
                           borderSide: BorderSide.none,
                         ),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _isPasswordVisible
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                            color: Colors.grey,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _isPasswordVisible = !_isPasswordVisible;
+                            });
+                          },
+                        ),
                       ),
-                      obscureText: true,
+                      obscureText: !_isPasswordVisible,
                       validator: _authService_Riz.validatePassword_R,
                     ),
                   ),
