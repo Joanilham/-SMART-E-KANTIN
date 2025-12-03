@@ -17,181 +17,202 @@ class _LoginScreen_BagasState extends State<LoginScreen_Bagas> {
       TextEditingController();
   final AuthService_Rizwar _authService_Riz = AuthService_Rizwar();
   bool _isLoading_Bagas = false;
+  bool _isPasswordVisible = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Login E-Kantin")),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey_Bagas,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset('assets/logo.png', height: 150),
-              const SizedBox(height: 30),
-              // Email - bubble style
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(30),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.06),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
+      body: Center(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Form(
+              key: _formKey_Bagas,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset('assets/logo.png', height: 150),
+                  const SizedBox(height: 30),
+                  // Email - bubble style
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(30),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.06),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                child: TextFormField(
-                  controller: _emailController_Bagas,
-                  decoration: const InputDecoration(
-                    labelText: "Email",
-                    filled: true,
-                    fillColor: Colors.transparent,
-                    contentPadding: EdgeInsets.symmetric(
-                      vertical: 18,
-                      horizontal: 20,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(30)),
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
-                  validator: _authService_Riz.validateEmail_Rizwar,
-                ),
-              ),
-              const SizedBox(height: 10),
-
-              // Password - bubble style
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(30),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.06),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: TextFormField(
-                  controller: _passwordController_Bagas,
-                  decoration: const InputDecoration(
-                    labelText: "Password",
-                    filled: true,
-                    fillColor: Colors.transparent,
-                    contentPadding: EdgeInsets.symmetric(
-                      vertical: 18,
-                      horizontal: 20,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(30)),
-                      borderSide: BorderSide.none,
+                    child: TextFormField(
+                      controller: _emailController_Bagas,
+                      decoration: const InputDecoration(
+                        labelText: "Email",
+                        filled: true,
+                        fillColor: Colors.transparent,
+                        contentPadding: EdgeInsets.symmetric(
+                          vertical: 18,
+                          horizontal: 20,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(30)),
+                          borderSide: BorderSide.none,
+                        ),
+                      ),
+                      validator: _authService_Riz.validateEmail_Rizwar,
                     ),
                   ),
-                  obscureText: true,
-                  validator: _authService_Riz.validatePassword_R,
-                ),
-              ),
-              const SizedBox(height: 20),
-              _isLoading_Bagas
-                  ? const CircularProgressIndicator()
-                  : SizedBox(
-                      width: double.infinity,
-                      height: 52,
-                      child: ElevatedButton(
-                        onPressed: () async {
-                          if (_formKey_Bagas.currentState!.validate()) {
-                            setState(() => _isLoading_Bagas = true);
-                            final user = await _authService_Riz.signInUser_R(
-                              _emailController_Bagas.text,
-                              _passwordController_Bagas.text,
-                            );
-                            setState(() => _isLoading_Bagas = false);
+                  const SizedBox(height: 10),
 
-                            if (user != null) {
-                              // Ambil NIM dari Firestore berdasarkan email
-                              String? nim = await _authService_Riz
-                                  .getUserNimByEmail_Rizwar(
-                                    _emailController_Bagas.text,
+                  // Password - bubble style
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(30),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.06),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: TextFormField(
+                      controller: _passwordController_Bagas,
+                      decoration: InputDecoration(
+                        labelText: "Password",
+                        filled: true,
+                        fillColor: Colors.transparent,
+                        contentPadding: const EdgeInsets.symmetric(
+                          vertical: 18,
+                          horizontal: 20,
+                        ),
+                        border: const OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(30)),
+                          borderSide: BorderSide.none,
+                        ),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _isPasswordVisible
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                            color: Colors.grey,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _isPasswordVisible = !_isPasswordVisible;
+                            });
+                          },
+                        ),
+                      ),
+                      obscureText: !_isPasswordVisible,
+                      validator: _authService_Riz.validatePassword_R,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  _isLoading_Bagas
+                      ? const CircularProgressIndicator()
+                      : SizedBox(
+                          width: double.infinity,
+                          height: 52,
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              if (_formKey_Bagas.currentState!.validate()) {
+                                setState(() => _isLoading_Bagas = true);
+                                final user = await _authService_Riz
+                                    .signInUser_R(
+                                      _emailController_Bagas.text,
+                                      _passwordController_Bagas.text,
+                                    );
+                                setState(() => _isLoading_Bagas = false);
+
+                                if (user != null) {
+                                  // Ambil NIM dari Firestore berdasarkan email
+                                  String? nim = await _authService_Riz
+                                      .getUserNimByEmail_Rizwar(
+                                        _emailController_Bagas.text,
+                                      );
+
+                                  // Jika NIM tidak ketemu (data lama/error), fallback ke parsing email (atau handle error)
+                                  if (nim == null) {
+                                    print(
+                                      "DEBUG: NIM not found in Firestore. Using email fallback.",
+                                    );
+                                    nim = _emailController_Bagas.text.split(
+                                      '@',
+                                    )[0];
+                                  }
+
+                                  print(
+                                    "DEBUG: Final NIM passed to HomeScreen: '$nim'",
                                   );
 
-                              // Jika NIM tidak ketemu (data lama/error), fallback ke parsing email (atau handle error)
-                              if (nim == null) {
-                                print(
-                                  "DEBUG: NIM not found in Firestore. Using email fallback.",
-                                );
-                                nim = _emailController_Bagas.text.split('@')[0];
-                              }
-
-                              print(
-                                "DEBUG: Final NIM passed to HomeScreen: '$nim'",
-                              );
-
-                              if (mounted) {
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => HomeScreen_Bagas(
-                                      currentUserNim_Bagas: nim!,
+                                  if (mounted) {
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => HomeScreen_Bagas(
+                                          currentUserNim_Bagas: nim!,
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                        "Login Gagal! Periksa Email/Password.",
+                                      ),
+                                      behavior: SnackBarBehavior.floating,
+                                      margin: EdgeInsets.only(
+                                        bottom: 150,
+                                        left: 16,
+                                        right: 16,
+                                      ),
+                                      backgroundColor: Colors.red,
                                     ),
-                                  ),
-                                );
+                                  );
+                                }
                               }
-                            } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text(
-                                    "Login Gagal! Periksa Email/Password.",
-                                  ),
-                                  behavior: SnackBarBehavior.floating,
-                                  margin: EdgeInsets.only(
-                                    bottom: 150,
-                                    left: 16,
-                                    right: 16,
-                                  ),
-                                  backgroundColor: Colors.red,
-                                ),
-                              );
-                            }
-                          }
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color.fromARGB(
-                            255,
-                            75,
-                            213,
-                            255,
-                          ),
-                          foregroundColor: Colors.white,
-                          elevation: 4,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                          textStyle: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color.fromARGB(
+                                255,
+                                75,
+                                213,
+                                255,
+                              ),
+                              foregroundColor: Colors.white,
+                              elevation: 4,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              textStyle: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
+                            ),
+                            child: const Text("Login"),
                           ),
                         ),
-                        child: const Text("Login"),
-                      ),
-                    ),
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const RegisterScreen_Rizwar(),
-                    ),
-                  );
-                },
-                child: const Text("Belum punya akun? Daftar"),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const RegisterScreen_Rizwar(),
+                        ),
+                      );
+                    },
+                    child: const Text("Belum punya akun? Daftar"),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),
