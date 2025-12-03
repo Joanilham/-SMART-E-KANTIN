@@ -63,7 +63,7 @@ class CartProvider_Joan extends ChangeNotifier {
       lastDigit = 0;
     }
 
-    if (lastDigit != null && lastDigit % 2 != 0) {
+    if (lastDigit % 2 != 0) {
       // NIM Ganjil: Diskon 5% + Ongkir Rp 10.000
       print("DEBUG: NIM Ganjil ($userNim). Applying 5% discount.");
       double discount = subtotal * 0.05;
