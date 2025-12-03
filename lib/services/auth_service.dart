@@ -3,7 +3,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-// Watermark Code diterapkan pada nama Class
+
 class AuthService_Rizwar {
   // Inisialisasi Firebase Auth dan Firestore dengan Watermark
   final FirebaseAuth _auth_Riz = FirebaseAuth.instance;
@@ -13,7 +13,7 @@ class AuthService_Rizwar {
   String? validateEmail_Rizwar(String? value) {
     if (value == null || value.isEmpty) {
       return 'Email tidak boleh kosong';
-    }
+    } 
 
     // Perbaikan: Menggunakan RegExp untuk validasi format email + domain wajib
     // Ganti @kampus\.ac\.id$ dengan domain kampus Anda
@@ -23,13 +23,12 @@ class AuthService_Rizwar {
     if (!emailRegex_R.hasMatch(value)) {
       return 'Wajib gunakan format email yang valid (ex: @gmail.com)!';
     }
-    return null;
+    return null;  
   }
 
   // 2. Fungsi Validasi Password (> 6 Char) (Watermark Code R)
   String? validatePassword_R(String? value) {
     if (value == null || value.length <= 6) {
-      // Memastikan length > 6
       return 'Password harus lebih dari 6 karakter (Min. 7 Karakter)';
     }
     return null;
