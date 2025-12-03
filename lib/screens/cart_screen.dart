@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/cart_provider.dart';
 import '../models/product_model.dart';
+import 'receipt_screen.dart';
 
 class CartScreen_Joan extends StatefulWidget {
   final String currentUserNim_Joan;
@@ -370,18 +371,38 @@ class _CartScreen_JoanState extends State<CartScreen_Joan> {
                               child: CircularProgressIndicator(),
                             ),
                           );
+                          // Capture data BEFORE checkout (because cart will be cleared)
+                          final currentItems = List<ProductModel_stefano>.from(
+                            cart.items,
+                          );
+                          final currentSubtotal = _calculateSubtotal(
+                            cart.items,
+                          );
+                          final currentShipping = cart.shippingCost_Joan;
+                          final currentFinalPrice = cart.finalPrice_Joan == 0
+                              ? currentSubtotal
+                              : cart.finalPrice_Joan;
+                          final currentPromo = cart.promoDescription_Joan;
+                          final transactionTime = DateTime.now();
+
                           bool success = await cart.processCheckout_Joan();
                           if (context.mounted) Navigator.pop(context);
                           if (success) {
                             if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Checkout Berhasil!'),
-                                  behavior: SnackBarBehavior.floating,
-                                  backgroundColor: Colors.green,
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ReceiptScreen(
+                                    items: currentItems,
+                                    subtotal: currentSubtotal,
+                                    shippingCost: currentShipping,
+                                    finalPrice: currentFinalPrice,
+                                    promoDescription: currentPromo,
+                                    transactionDate: transactionTime,
+                                    userNim: widget.currentUserNim_Joan,
+                                  ),
                                 ),
                               );
-                              Navigator.pop(context);
                             }
                           } else {
                             if (context.mounted)
