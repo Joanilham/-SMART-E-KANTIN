@@ -3,26 +3,104 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../services/auth_service.dart';
 import 'login_screen.dart';
 
-class ProfileScreen_Bagas extends StatelessWidget {
+class ProfileScreen_Bagas extends StatefulWidget {
   final String currentUserNim_Bagas;
 
   const ProfileScreen_Bagas({super.key, required this.currentUserNim_Bagas});
 
   @override
-  Widget build(BuildContext context) {
-    final AuthService_Rizwar _authService = AuthService_Rizwar();
+  State<ProfileScreen_Bagas> createState() => _ProfileScreen_BagasState();
+}
 
+class _ProfileScreen_BagasState extends State<ProfileScreen_Bagas> {
+  final AuthService_Rizwar _authService = AuthService_Rizwar();
+
+  void _showEditProfileDialog(String currentName) {
+    final TextEditingController nameController = TextEditingController(
+      text: currentName,
+    );
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Edit Profil"),
+          content: TextField(
+            controller: nameController,
+            decoration: const InputDecoration(labelText: "Nama Lengkap"),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Batal"),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                if (nameController.text.trim().isNotEmpty) {
+                  bool success = await _authService.updateUserProfile_Rizwar(
+                    widget.currentUserNim_Bagas,
+                    nameController.text.trim(),
+                  );
+                  if (context.mounted) {
+                    Navigator.pop(context);
+                    if (success) {
+                      setState(() {}); // Refresh UI
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("Profil berhasil diperbarui!"),
+                          backgroundColor: Colors.green,
+                        ),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("Gagal memperbarui profil."),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    }
+                  }
+                }
+              },
+              child: const Text("Simpan"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Profile"),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.edit),
+            onPressed: () {
+              // Fetch current data first to pre-fill dialog
+              FirebaseFirestore.instance
+                  .collection('Users')
+                  .doc(widget.currentUserNim_Bagas)
+                  .get()
+                  .then((snapshot) {
+                    if (snapshot.exists) {
+                      final data = snapshot.data() as Map<String, dynamic>;
+                      _showEditProfileDialog(data['full name'] ?? '');
+                    }
+                  });
+            },
+          ),
+        ],
       ),
       body: FutureBuilder<DocumentSnapshot>(
         future: FirebaseFirestore.instance
             .collection('Users')
-            .doc(currentUserNim_Bagas)
+            .doc(widget.currentUserNim_Bagas)
             .get(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {

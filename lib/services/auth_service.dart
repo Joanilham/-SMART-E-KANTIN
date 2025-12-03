@@ -5,7 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
 
-
+// Watermark Code diterapkan pada nama Class
 class AuthService_Rizwar {
   // Inisialisasi Firebase Auth dan Firestore dengan Watermark
   final FirebaseAuth _auth_Riz = FirebaseAuth.instance;
@@ -15,7 +15,7 @@ class AuthService_Rizwar {
   String? validateEmail_Rizwar(String? value) {
     if (value == null || value.isEmpty) {
       return 'Email tidak boleh kosong';
-    } 
+    }
 
     // Perbaikan: Menggunakan RegExp untuk validasi format email + domain wajib
     // Ganti @kampus\.ac\.id$ dengan domain kampus Anda
@@ -25,12 +25,13 @@ class AuthService_Rizwar {
     if (!emailRegex_R.hasMatch(value)) {
       return 'Wajib gunakan format email yang valid (ex: @gmail.com)!';
     }
-    return null;  
+    return null;
   }
 
   // 2. Fungsi Validasi Password (> 6 Char) (Watermark Code R)
   String? validatePassword_R(String? value) {
     if (value == null || value.length <= 6) {
+      // Memastikan length > 6
       return 'Password harus lebih dari 6 karakter (Min. 7 Karakter)';
     }
     return null;
@@ -105,5 +106,18 @@ class AuthService_Rizwar {
   // 6. Sign Out (Watermark Code R)
   Future<void> signOut_Rizwar() async {
     await _auth_Riz.signOut();
+  }
+
+  // 7. Update User Profile (Watermark Code R)
+  Future<bool> updateUserProfile_Rizwar(String nim, String newName) async {
+    try {
+      await _firestore_Riz.collection('Users').doc(nim).update({
+        'full name': newName,
+      });
+      return true;
+    } catch (e) {
+      print("Error Updating Profile: $e");
+      return false;
+    }
   }
 }
