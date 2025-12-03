@@ -107,4 +107,17 @@ class AuthService_Rizwar {
   Future<void> signOut_Rizwar() async {
     await _auth_Riz.signOut();
   }
+
+  // 7. Update User Profile (Watermark Code R)
+  Future<bool> updateUserProfile_Rizwar(String nim, String newName) async {
+    try {
+      await _firestore_Riz.collection('Users').doc(nim).update({
+        'full name': newName,
+      });
+      return true;
+    } catch (e) {
+      print("Error Updating Profile: $e");
+      return false;
+    }
+  }
 }
